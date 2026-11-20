@@ -1,0 +1,27 @@
++ date -u +%T
++ grep -c 'BEGIN CERTIFICATE' /lab/tls/server.crt
+14:38:57
+2
++ curl -sS --cacert /lab/tls/acme-root.crt https://www.se-201-11.lab/
+server: se-201-11 (https)
+Host: www.se-201-11.lab
+SNI: www.se-201-11.lab
+protocol: TLSv1.3
++ openssl s_client -connect www.se-201-11.lab:443 -servername www.se-201-11.lab -CAfile /lab/tls/acme-root.crt
++ sed -n '/^Certificate chain/,/^---/p;/^Verify return code/p'
+Certificate chain
+ 0 s:CN = www.se-201-11.lab
+   i:CN = Pebble Intermediate CA 61d16c
+   a:PKEY: id-ecPublicKey, 256 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 20 14:37:08 2026 GMT; NotAfter: Nov 20 14:37:07 2031 GMT
+ 1 s:CN = Pebble Intermediate CA 61d16c
+   i:CN = Pebble Root CA 0932b3
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 20 14:33:46 2026 GMT; NotAfter: Nov 20 14:33:46 2056 GMT
+---
+Verify return code: 0 (ok)
++ curl -sS --cacert /lab/tls/acme-root.crt https://portal.se-201-11.lab/
+server: se-201-11 (https)
+Host: portal.se-201-11.lab
+SNI: portal.se-201-11.lab
+protocol: TLSv1.3
