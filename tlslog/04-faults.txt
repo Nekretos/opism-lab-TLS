@@ -1,0 +1,90 @@
+### 4.1
+root@se-201-11:/lab/work# for i in 1 2 3 4 5; do
+  n=f$i.se-201-11.lab; echo "=== $n"
+  curl -sS --cacert $STAND_CA https://$n/ 2>&1 | head -1
+  openssl s_client -connect $n:443 -servername $n -CAfile $STAND_CA </dev/null 2>/dev/null \
+    | sed -n '/^Certificate chain/,/^---/p;/^Verify return code/p' | grep -v PKEY
+done
+=== f1.se-201-11.lab
+server: web, f1
+Certificate chain
+ 0 s:CN = f1.se-201-11.lab
+   i:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+ 1 s:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   i:O = OPISM Lab, CN = OPISM Stand Root CA
+   v:NotBefore: Nov 20 14:33:43 2026 GMT; NotAfter: Nov 19 14:33:43 2031 GMT
+---
+Verify return code: 0 (ok)
+=== f2.se-201-11.lab
+curl: (60) SSL: no alternative certificate subject name matches target host name 'f2.se-201-11.lab'
+Certificate chain
+ 0 s:CN = old.se-201-11.lab
+   i:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+ 1 s:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   i:O = OPISM Lab, CN = OPISM Stand Root CA
+   v:NotBefore: Nov 20 14:33:43 2026 GMT; NotAfter: Nov 19 14:33:43 2031 GMT
+---
+Verify return code: 0 (ok)
+=== f3.se-201-11.lab
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+Certificate chain
+ 0 s:CN = f3.se-201-11.lab
+   i:O = Foreign Org, CN = Foreign Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+ 1 s:O = Foreign Org, CN = Foreign Intermediate CA
+   i:O = Foreign Org, CN = Foreign Root CA
+   v:NotBefore: Nov 20 14:33:43 2026 GMT; NotAfter: Nov 19 14:33:43 2031 GMT
+---
+Verify return code: 20 (unable to get local issuer certificate)
+=== f4.se-201-11.lab
+curl: (60) SSL certificate problem: self-signed certificate
+Certificate chain
+ 0 s:CN = f4.se-201-11.lab
+   i:CN = f4.se-201-11.lab
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+---
+Verify return code: 18 (self-signed certificate)
+=== f5.se-201-11.lab
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+Certificate chain
+ 0 s:CN = f5.se-201-11.lab
+   i:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+---
+Verify return code: 21 (unable to verify the first certificate)
+
+### додатково: curl -k (питання 3) і SAN/дати кожного сертифіката
+root@se-201-11:/lab/work# for i in 1 2 3 4 5; do n=f$i.se-201-11.lab; echo "=== $n: $(curl -sk https://$n/ 2>&1 | head -1)"; openssl s_client -connect $n:443 -servername $n </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 | grep -v '^X509v3'; done
+=== f1.se-201-11.lab: server: web, f1
+subject=CN = f1.se-201-11.lab
+issuer=O = OPISM Lab, CN = OPISM Stand Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f1.se-201-11.lab
+=== f2.se-201-11.lab: server: web, f2
+subject=CN = old.se-201-11.lab
+issuer=O = OPISM Lab, CN = OPISM Stand Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:old.se-201-11.lab
+=== f3.se-201-11.lab: server: web, f3
+subject=CN = f3.se-201-11.lab
+issuer=O = Foreign Org, CN = Foreign Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f3.se-201-11.lab
+=== f4.se-201-11.lab: server: web, f4
+subject=CN = f4.se-201-11.lab
+issuer=CN = f4.se-201-11.lab
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f4.se-201-11.lab
+=== f5.se-201-11.lab: server: web, f5
+subject=CN = f5.se-201-11.lab
+issuer=O = OPISM Lab, CN = OPISM Stand Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f5.se-201-11.lab
+

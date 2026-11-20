@@ -1,0 +1,44 @@
+### 1.1
+root@se-201-11:/lab/work# timeout 8 tcpdump -ni eth0 -A -s0 -l 'host 10.53.0.80 and tcp port 80' > t1-http.txt &
+sleep 1; curl -s http://origin.se-201-11.lab/; wait
+grep -a -E 'GET /|Host:|server: web' t1-http.txt
+server: web
+Host: origin.se-201-11.lab
+SNI: 
+protocol: HTTP/1.1 
+client: 10.53.1.1
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+10 packets captured
+10 packets received by filter
+0 packets dropped by kernel
+14:36:31.252543 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [P.], seq 1:84, ack 1, win 502, options [nop,nop,TS val 3355283745 ecr 2564790072], length 83: HTTP: GET / HTTP/1.1
+...!...8GET / HTTP/1.1
+Host: origin.se-201-11.lab
+server: web
+Host: origin.se-201-11.lab
+
+### 1.2
+root@se-201-11:/lab/work# timeout 8 tcpdump -ni eth0 -A -s0 -l 'host 10.53.0.80 and tcp port 443' > t1-https.txt &
+sleep 1; curl -s --cacert $STAND_CA https://origin.se-201-11.lab/; wait
+grep -a -c -E 'GET /|server: web' t1-https.txt
+grep -a -o 'origin.se-201-11.lab' t1-https.txt | wc -l
+server: web
+Host: origin.se-201-11.lab
+SNI: origin.se-201-11.lab
+protocol: HTTP/2.0 TLSv1.3
+client: 10.53.1.1
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+22 packets captured
+22 packets received by filter
+0 packets dropped by kernel
+0
+1
+
+### додатково: Host і ім'я сервера в дампі HTTP (кількість входжень)
+root@se-201-11:/lab/work# grep -a -c 'Host:' t1-http.txt; grep -a -o 'origin.se-201-11.lab' t1-http.txt | wc -l; grep -a -c 'Host:' t1-https.txt
+2
+2
+0
+

@@ -1,0 +1,7 @@
+root@se-201-11:/lab/work# openssl version
+OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
+
+root@se-201-11:/lab/work# date -u; tc qdisc show dev eth0
+Fri Nov 20 14:36:30 UTC 2026
+qdisc netem 8001: root refcnt 3 limit 1000 delay 20ms
+

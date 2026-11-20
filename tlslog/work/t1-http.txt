@@ -1,0 +1,68 @@
+14:36:31.232364 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [S], seq 665133748, win 64240, options [mss 1460,sackOK,TS val 3355283705 ecr 0,nop,wscale 7], length 0
+E..<[.@.@..5
+5..
+5.P...P'."....................
+............
+14:36:31.232435 IP 10.53.0.80.80 > 10.53.1.1.53484: Flags [S.], seq 291364158, ack 665133749, win 65160, options [mss 1460,sackOK,TS val 2564790072 ecr 3355283705,nop,wscale 7], length 0
+E..<..@.@.%.
+5.P
+5...P...].>'."................
+...8........
+14:36:31.252468 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [.], ack 1, win 502, options [nop,nop,TS val 3355283745 ecr 2564790072], length 0
+E..4[.@.@..<
+5..
+5.P...P'."..].?...........
+...!...8
+14:36:31.252543 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [P.], seq 1:84, ack 1, win 502, options [nop,nop,TS val 3355283745 ecr 2564790072], length 83: HTTP: GET / HTTP/1.1
+E...[.@.@...
+5..
+5.P...P'."..].?.....4.....
+...!...8GET / HTTP/1.1
+Host: origin.se-201-11.lab
+User-Agent: curl/8.5.0
+Accept: */*
+
+
+14:36:31.252559 IP 10.53.0.80.80 > 10.53.1.1.53484: Flags [.], ack 84, win 509, options [nop,nop,TS val 2564790092 ecr 3355283745], length 0
+E..4..@.@...
+5.P
+5...P...].?'.#............
+...L...!
+14:36:31.252630 IP 10.53.0.80.80 > 10.53.1.1.53484: Flags [P.], seq 1:241, ack 84, win 509, options [nop,nop,TS val 2564790092 ecr 3355283745], length 240: HTTP: HTTP/1.1 200 OK
+E..$..@.@.. 
+5.P
+5...P...].?'.#............
+...L...!HTTP/1.1 200 OK
+Server: nginx/1.24.0 (Ubuntu)
+Date: Fri, 20 Nov 2026 14:36:31 GMT
+Content-Type: text/plain
+Content-Length: 83
+Connection: keep-alive
+
+server: web
+Host: origin.se-201-11.lab
+SNI: 
+protocol: HTTP/1.1 
+client: 10.53.1.1
+
+14:36:31.272666 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [.], ack 241, win 501, options [nop,nop,TS val 3355283765 ecr 2564790092], length 0
+E..4[.@.@..:
+5..
+5.P...P'.#..]./...........
+...5...L
+14:36:31.273009 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [F.], seq 84, ack 241, win 501, options [nop,nop,TS val 3355283766 ecr 2564790092], length 0
+E..4[.@.@..9
+5..
+5.P...P'.#..]./...........
+...6...L
+14:36:31.273065 IP 10.53.0.80.80 > 10.53.1.1.53484: Flags [F.], seq 241, ack 85, win 509, options [nop,nop,TS val 2564790113 ecr 3355283766], length 0
+E..4..@.@...
+5.P
+5...P...]./'.#	...........
+...a...6
+14:36:31.293083 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [.], ack 242, win 501, options [nop,nop,TS val 3355283786 ecr 2564790113], length 0
+E..4[.@.@..8
+5..
+5.P...P'.#	.].0...........
+...J...a
+

@@ -1,0 +1,354 @@
+CONNECTED(00000003)
+Sent Record
+Header:
+  Version = TLS 1.0 (0x301)
+  Content Type = Handshake (22)
+  Length = 335
+    ClientHello, Length=331
+      client_version=0x303 (TLS 1.2)
+      Random:
+        gmt_unix_time=0xE09A8753
+        random_bytes (len=28): 2F71800DE4318D3986450DD142E52B625064A6FD3BD32E476297FFC4
+      session_id (len=32): 1F3A6D184F14B9EDDC35039608E01BE34C29603446B90AB612BA66F879025132
+      cipher_suites (len=62)
+        {0x13, 0x02} TLS_AES_256_GCM_SHA384
+        {0x13, 0x03} TLS_CHACHA20_POLY1305_SHA256
+        {0x13, 0x01} TLS_AES_128_GCM_SHA256
+        {0xC0, 0x2C} TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        {0xC0, 0x30} TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        {0x00, 0x9F} TLS_DHE_RSA_WITH_AES_256_GCM_SHA384
+        {0xCC, 0xA9} TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        {0xCC, 0xA8} TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        {0xCC, 0xAA} TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        {0xC0, 0x2B} TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        {0xC0, 0x2F} TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        {0x00, 0x9E} TLS_DHE_RSA_WITH_AES_128_GCM_SHA256
+        {0xC0, 0x24} TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+        {0xC0, 0x28} TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
+        {0x00, 0x6B} TLS_DHE_RSA_WITH_AES_256_CBC_SHA256
+        {0xC0, 0x23} TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
+        {0xC0, 0x27} TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+        {0x00, 0x67} TLS_DHE_RSA_WITH_AES_128_CBC_SHA256
+        {0xC0, 0x0A} TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA
+        {0xC0, 0x14} TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA
+        {0x00, 0x39} TLS_DHE_RSA_WITH_AES_256_CBC_SHA
+        {0xC0, 0x09} TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA
+        {0xC0, 0x13} TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
+        {0x00, 0x33} TLS_DHE_RSA_WITH_AES_128_CBC_SHA
+        {0x00, 0x9D} TLS_RSA_WITH_AES_256_GCM_SHA384
+        {0x00, 0x9C} TLS_RSA_WITH_AES_128_GCM_SHA256
+        {0x00, 0x3D} TLS_RSA_WITH_AES_256_CBC_SHA256
+        {0x00, 0x3C} TLS_RSA_WITH_AES_128_CBC_SHA256
+        {0x00, 0x35} TLS_RSA_WITH_AES_256_CBC_SHA
+        {0x00, 0x2F} TLS_RSA_WITH_AES_128_CBC_SHA
+        {0x00, 0xFF} TLS_EMPTY_RENEGOTIATION_INFO_SCSV
+      compression_methods (len=1)
+        No Compression (0x00)
+      extensions, length = 196
+        extension_type=server_name(0), length=25
+          0000 - 00 17 00 00 14 6f 72 69-67 69 6e 2e 73 65 2d   .....origin.se-
+          000f - 32 30 31 2d 31 31 2e 6c-61 62                  201-11.lab
+        extension_type=ec_point_formats(11), length=4
+          uncompressed (0)
+          ansiX962_compressed_prime (1)
+          ansiX962_compressed_char2 (2)
+        extension_type=supported_groups(10), length=22
+          ecdh_x25519 (29)
+          secp256r1 (P-256) (23)
+          ecdh_x448 (30)
+          secp521r1 (P-521) (25)
+          secp384r1 (P-384) (24)
+          ffdhe2048 (256)
+          ffdhe3072 (257)
+          ffdhe4096 (258)
+          ffdhe6144 (259)
+          ffdhe8192 (260)
+        extension_type=session_ticket(35), length=0
+        extension_type=application_layer_protocol_negotiation(16), length=14
+          h2
+          http/1.1
+        extension_type=encrypt_then_mac(22), length=0
+        extension_type=extended_master_secret(23), length=0
+        extension_type=signature_algorithms(13), length=42
+          ecdsa_secp256r1_sha256 (0x0403)
+          ecdsa_secp384r1_sha384 (0x0503)
+          ecdsa_secp521r1_sha512 (0x0603)
+          ed25519 (0x0807)
+          ed448 (0x0808)
+          rsa_pss_pss_sha256 (0x0809)
+          rsa_pss_pss_sha384 (0x080a)
+          rsa_pss_pss_sha512 (0x080b)
+          rsa_pss_rsae_sha256 (0x0804)
+          rsa_pss_rsae_sha384 (0x0805)
+          rsa_pss_rsae_sha512 (0x0806)
+          rsa_pkcs1_sha256 (0x0401)
+          rsa_pkcs1_sha384 (0x0501)
+          rsa_pkcs1_sha512 (0x0601)
+          ecdsa_sha224 (0x0303)
+          rsa_pkcs1_sha224 (0x0301)
+          dsa_sha224 (0x0302)
+          dsa_sha256 (0x0402)
+          dsa_sha384 (0x0502)
+          dsa_sha512 (0x0602)
+        extension_type=supported_versions(43), length=5
+          TLS 1.3 (772)
+          TLS 1.2 (771)
+        extension_type=psk_key_exchange_modes(45), length=2
+          psk_dhe_ke (1)
+        extension_type=key_share(51), length=38
+            NamedGroup: ecdh_x25519 (29)
+            key_exchange:  (len=32): DB15DC08C8D31C50F5EED4F1F485FA36684FAE19FCC6A3FC34974430A7E9D32B
+
+Received Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = Handshake (22)
+  Length = 122
+    ServerHello, Length=118
+      server_version=0x303 (TLS 1.2)
+      Random:
+        gmt_unix_time=0x3E536113
+        random_bytes (len=28): 173EAE531757E95FA4DC4672E02C89E458DBBD7B74AE17D348E0C7C1
+      session_id (len=32): 1F3A6D184F14B9EDDC35039608E01BE34C29603446B90AB612BA66F879025132
+      cipher_suite {0x13, 0x02} TLS_AES_256_GCM_SHA384
+      compression_method: No Compression (0x00)
+      extensions, length = 46
+        extension_type=supported_versions(43), length=2
+            TLS 1.3 (772)
+        extension_type=key_share(51), length=36
+            NamedGroup: ecdh_x25519 (29)
+            key_exchange:  (len=32): 44EB4547C16FF3D113947E77049E17340CA7526D835A691263515FAA55709E09
+
+Received Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ChangeCipherSpec (20)
+  Length = 1
+Received Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ApplicationData (23)
+  Length = 36
+  Inner Content Type = Handshake (22)
+    EncryptedExtensions, Length=15
+      extensions, length = 13
+        extension_type=server_name(0), length=0
+        extension_type=application_layer_protocol_negotiation(16), length=5
+          h2
+
+Received Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ApplicationData (23)
+  Length = 1012
+  Inner Content Type = Handshake (22)
+    Certificate, Length=991
+      context (len=0): 
+      certificate_list, length=987
+        ASN.1Cert, length=504
+------details-----
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            40:9b:5d:87:03:37:6a:ee:47:e7:7e:b4:e8:aa:7f:f8:97:cc:7a:94
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: O = OPISM Lab, CN = OPISM Stand Intermediate CA
+        Validity
+            Not Before: Nov 20 14:33:44 2026 GMT
+            Not After : Feb 18 14:33:44 2027 GMT
+        Subject: CN = origin.se-201-11.lab
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:3f:52:47:e0:f6:bf:f9:6f:26:2b:fa:5a:f0:0e:
+                    51:99:6a:82:1a:bf:38:86:0b:f2:44:ab:44:39:6f:
+                    50:53:f8:88:5a:8a:15:ef:16:14:59:18:bc:7e:eb:
+                    df:34:e1:a5:fb:b1:56:9a:51:32:40:fc:87:41:9f:
+                    7a:81:86:08:4d
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Key Usage: critical
+                Digital Signature
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+            X509v3 Subject Alternative Name: 
+                DNS:origin.se-201-11.lab
+            X509v3 Subject Key Identifier: 
+                CF:70:57:34:46:94:71:F7:45:02:16:E7:51:7D:E1:0B:F9:13:D7:4E
+            X509v3 Authority Key Identifier: 
+                13:EE:8E:6F:DF:74:AD:8F:55:C6:3F:3D:6D:F2:38:28:7C:42:62:1C
+    Signature Algorithm: ecdsa-with-SHA256
+    Signature Value:
+        30:46:02:21:00:96:e0:9e:9f:71:9a:8d:09:ff:fe:74:03:34:
+        83:66:41:fc:60:0f:c0:b1:24:f8:fd:f0:77:88:62:d0:69:cf:
+        1e:02:21:00:e8:42:30:5f:2e:22:a1:61:8f:96:e4:57:f3:37:
+        a7:61:ea:e5:5c:bb:7c:a1:16:4a:93:6f:c7:e5:20:23:1c:0d
+-----BEGIN CERTIFICATE-----
+MIIB9DCCAZmgAwIBAgIUQJtdhwM3au5H53606Kp/+JfMepQwCgYIKoZIzj0EAwIw
+OjESMBAGA1UECgwJT1BJU00gTGFiMSQwIgYDVQQDDBtPUElTTSBTdGFuZCBJbnRl
+cm1lZGlhdGUgQ0EwHhcNMjYxMTIwMTQzMzQ0WhcNMjcwMjE4MTQzMzQ0WjAfMR0w
+GwYDVQQDDBRvcmlnaW4uc2UtMjAxLTExLmxhYjBZMBMGByqGSM49AgEGCCqGSM49
+AwEHA0IABD9SR+D2v/lvJiv6WvAOUZlqghq/OIYL8kSrRDlvUFP4iFqKFe8WFFkY
+vH7r3zThpfuxVppRMkD8h0GfeoGGCE2jgZcwgZQwDAYDVR0TAQH/BAIwADAOBgNV
+HQ8BAf8EBAMCB4AwEwYDVR0lBAdepth=2 O = OPISM Lab, CN = OPISM Stand Root CA
+verify return:1
+depth=1 O = OPISM Lab, CN = OPISM Stand Intermediate CA
+verify return:1
+depth=0 CN = origin.se-201-11.lab
+verify return:1
+wwCgYIKwYBBQUHAwEwHwYDVR0RBBgwFoIUb3Jp
+Z2luLnNlLTIwMS0xMS5sYWIwHQYDVR0OBBYEFM9wVzRGlHH3RQIW51F94Qv5E9dO
+MB8GA1UdIwQYMBaAFBPujm/fdK2PVcY/PW3yOCh8QmIcMAoGCCqGSM49BAMCA0kA
+MEYCIQCW4J6fcZqNCf/+dAM0g2ZB/GAPwLEk+P3wd4hi0GnPHgIhAOhCMF8uIqFh
+j5bkV/M3p2Hq5Vy7fKEWSpNvx+UgIxwN
+-----END CERTIFICATE-----
+------------------
+        No extensions
+        ASN.1Cert, length=473
+------details-----
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            2a:2f:4d:f3:9c:e6:c3:22:0a:8e:92:17:30:87:67:85:ce:df:de:22
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: O = OPISM Lab, CN = OPISM Stand Root CA
+        Validity
+            Not Before: Nov 20 14:33:43 2026 GMT
+            Not After : Nov 19 14:33:43 2031 GMT
+        Subject: O = OPISM Lab, CN = OPISM Stand Intermediate CA
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:6a:8d:9e:4c:83:f5:08:b7:02:3a:eb:59:6f:22:
+                    e7:c9:c1:a1:31:c3:65:c4:7d:8e:fc:68:76:31:99:
+                    67:ac:60:bd:9c:cc:30:f0:29:ab:43:e8:31:8e:7c:
+                    8f:30:01:8b:9f:35:e6:41:a8:36:35:45:e8:c3:88:
+                    54:ff:bb:d3:f3
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Subject Key Identifier: 
+                13:EE:8E:6F:DF:74:AD:8F:55:C6:3F:3D:6D:F2:38:28:7C:42:62:1C
+            X509v3 Authority Key Identifier: 
+                98:42:95:03:FC:91:F6:2A:CA:92:DE:4C:1A:96:32:6B:DE:D9:C7:99
+    Signature Algorithm: ecdsa-with-SHA256
+    Signature Value:
+        30:46:02:21:00:a2:23:12:78:83:2c:bc:e0:df:19:d1:27:6e:
+        8a:26:0a:46:2c:06:ef:70:60:e0:05:86:1d:e1:79:10:98:d8:
+        64:02:21:00:82:9e:05:3e:9f:3b:e7:08:e9:f5:bd:3e:d5:a6:
+        12:0f:29:01:fc:35:4c:be:ce:9b:ca:62:34:c5:15:5c:43:a6
+-----BEGIN CERTIFICATE-----
+MIIB1TCCAXqgAwIBAgIUKi9N85zmwyIKjpIXMIdnhc7f3iIwCgYIKoZIzj0EAwIw
+MjESMBAGA1UECgwJT1BJU00gTGFiMRwwGgYDVQQDDBNPUElTTSBTdGFuZCBSb290
+IENBMB4XDTI2MTEyMDE0MzM0M1oXDTMxMTExOTE0MzM0M1owOjESMBAGA1UECgwJ
+T1BJU00gTGFiMSQwIgYDVQQDDBtPUElTTSBTdGFuZCBJbnRlcm1lZGlhdGUgQ0Ew
+WTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARqjZ5Mg/UItwI661lvIufJwaExw2XE
+fY78aHYxmWesYL2czDDwKatD6DGOfI8wAYufNeZBqDY1RejDiFT/u9Pzo2YwZDAS
+BgNVHRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUE+6O
+b990rY9Vxj89bfI4KHxCYhwwHwYDVR0jBBgwFoAUmEKVA/yR9irKkt5MGpYya97Z
+x5kwCgYIKoZIzj0EAwIDSQAwRgIhAKIjEniDLLzg3xnRJ26KJgpGLAbvcGDgBYYd
+4XkQmNhkAiEAgp4FPp875wjp9b0+1aYSDykB/DVMvs6bymI0xRVcQ6Y=
+-----END CERTIFICATE-----
+------------------
+        No extensions
+
+Received Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ApplicationData (23)
+  Length = 96
+  Inner Content Type = Handshake (22)
+    CertificateVerify, Length=75
+      Signature Algorithm: ecdsa_secp256r1_sha256 (0x0403)
+      Signature (len=71): 3045022012A0C365A16B4A3BA97C263E8C336C5AEAD21B69CC838C1BD62D016E36C82E87022100B519576FFDBE2535C7E51A89D63AF3ECD6F9E080CBFC7C7D3A609C7B2F3D86C7
+
+Received Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ApplicationData (23)
+  Length = 69
+  Inner Content Type = Handshake (22)
+    Finished, Length=48
+      verify_data (len=48): ABA03DE86FC339ECC55D0707EDAEC2220A8D590EE446ED26BF8CD22119591D04F5CA88BC5B117D2E86A664DCBD6893B7
+
+Sent Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ChangeCipherSpec (20)
+  Length = 1
+    change_cipher_spec (1)
+
+Sent Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ApplicationData (23)
+  Length = 69
+  Inner Content Type = Handshake (22)
+    Finished, Length=48
+      verify_data (len=48): BEE0BAA922F438A4248FB22427C6E8830676F915A0F31B2C30EE2B53EE7A9614A72270C51DA7E2F29AB4B07D490AA3F8
+
+---
+Certificate chain
+ 0 s:CN = origin.se-201-11.lab
+   i:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   a:PKEY: id-ecPublicKey, 256 (bit); sigalg: ecdsa-with-SHA256
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+ 1 s:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   i:O = OPISM Lab, CN = OPISM Stand Root CA
+   a:PKEY: id-ecPublicKey, 256 (bit); sigalg: ecdsa-with-SHA256
+   v:NotBefore: Nov 20 14:33:43 2026 GMT; NotAfter: Nov 19 14:33:43 2031 GMT
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIB9DCCAZmgAwIBAgIUQJtdhwM3au5H53606Kp/+JfMepQwCgYIKoZIzj0EAwIw
+OjESMBAGA1UECgwJT1BJU00gTGFiMSQwIgYDVQQDDBtPUElTTSBTdGFuZCBJbnRl
+cm1lZGlhdGUgQ0EwHhcNMjYxMTIwMTQzMzQ0WhcNMjcwMjE4MTQzMzQ0WjAfMR0w
+GwYDVQQDDBRvcmlnaW4uc2UtMjAxLTExLmxhYjBZMBMGByqGSM49AgEGCCqGSM49
+AwEHA0IABD9SR+D2v/lvJiv6WvAOUZlqghq/OIYL8kSrRDlvUFP4iFqKFe8WFFkY
+vH7r3zThpfuxVppRMkD8h0GfeoGGCE2jgZcwgZQwDAYDVR0TAQH/BAIwADAOBgNV
+HQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwEwHwYDVR0RBBgwFoIUb3Jp
+Z2luLnNlLTIwMS0xMS5sYWIwHQYDVR0OBBYEFM9wVzRGlHH3RQIW51F94Qv5E9dO
+MB8GA1UdIwQYMBaAFBPujm/fdK2PVcY/PW3yOCh8QmIcMAoGCCqGSM49BAMCA0kA
+MEYCIQCW4J6fcZqNCf/+dAM0g2ZB/GAPwLEk+P3wd4hi0GnPHgIhAOhCMF8uIqFh
+j5bkV/M3p2Hq5Vy7fKEWSpNvx+UgIxwN
+-----END CERTIFICATE-----
+subject=CN = origin.se-201-11.lab
+issuer=O = OPISM Lab, CN = OPISM Stand Intermediate CA
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: ECDSA
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 1366 bytes and written 420 bytes
+Verification: OK
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 256 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+ALPN protocol: h2
+Early data was not sent
+Verify return code: 0 (ok)
+---
+DONE
+Sent Record
+Header:
+  Version = TLS 1.2 (0x303)
+  Content Type = ApplicationData (23)
+  Length = 19
+  Inner Content Type = Alert (21)
+    Level=warning(1), description=close notify(0)
+

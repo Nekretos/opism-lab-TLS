@@ -1,0 +1,128 @@
+### 3.1
+root@se-201-11:/lab/work# acme-root
+openssl x509 -in /lab/tls/acme-root.crt -noout -subject -dates
+збережено /lab/tls/acme-root.crt
+subject=CN = Pebble Root CA 0932b3
+notBefore=Nov 20 14:33:46 2026 GMT
+notAfter=Nov 20 14:33:46 2056 GMT
+
+### 3.2
+root@se-201-11:/lab/work# curl -sS --cacert /lab/tls/acme-root.crt https://www.se-201-11.lab/
+curl: (60) SSL certificate problem: self-signed certificate
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+
+### 3.3
+root@se-201-11:/lab/work# lego --server $ACME_DIR --email admin@se-201-11.lab --accept-tos --path /lab/work/lego \
+  --http --http.webroot /var/www/acme \
+  --domains www.se-201-11.lab --domains portal.se-201-11.lab run --no-bundle
+grep acme-challenge /var/log/nginx/access.log
+2026/11/20 14:36:59 No key found for account admin@se-201-11.lab. Generating a P256 key.
+2026/11/20 14:36:59 Saved key to /lab/work/lego/accounts/ca.lab_14000/admin@se-201-11.lab/keys/admin@se-201-11.lab.key
+2026/11/20 14:36:59 [INFO] acme: Registering account for admin@se-201-11.lab
+!!!! HEADS UP !!!!
+
+Your account credentials have been saved in your Let's Encrypt
+configuration directory at "/lab/work/lego/accounts".
+
+You should make a secure backup of this folder now. This
+configuration directory will also contain certificates and
+private keys obtained from Let's Encrypt so making regular
+backups of this folder is ideal.
+2026/11/20 14:36:59 [INFO] [www.se-201-11.lab, portal.se-201-11.lab] acme: Obtaining SAN certificate
+2026/11/20 14:37:00 [INFO] [www.se-201-11.lab] AuthURL: https://ca.lab:14000/authZ/HPctKJIdI4e8vD2EA3SmHNztklw2R1xjKNYGxd8We68
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] AuthURL: https://ca.lab:14000/authZ/Ij7U8xLAwDJbSa7eYVp-41Pmk6tdsBXOBmNyToMiB64
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] acme: Could not find solver for: tls-alpn-01
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] acme: use http-01 solver
+2026/11/20 14:37:00 [INFO] [www.se-201-11.lab] acme: Could not find solver for: tls-alpn-01
+2026/11/20 14:37:00 [INFO] [www.se-201-11.lab] acme: use http-01 solver
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] acme: Trying to solve HTTP-01
+2026/11/20 14:37:04 [INFO] [portal.se-201-11.lab] The server validated our request
+2026/11/20 14:37:04 [INFO] [www.se-201-11.lab] acme: Trying to solve HTTP-01
+2026/11/20 14:37:08 [INFO] [www.se-201-11.lab] The server validated our request
+2026/11/20 14:37:08 [INFO] [www.se-201-11.lab, portal.se-201-11.lab] acme: Validations succeeded; requesting certificates
+2026/11/20 14:37:08 [INFO] Wait for certificate [timeout: 30s, interval: 500ms]
+2026/11/20 14:37:08 [INFO] [www.se-201-11.lab] Server responded with a certificate.
+10.53.0.10 - - [20/Nov/2026:14:37:00 +0000] "GET /.well-known/acme-challenge/TelKpfKOeRRi1bAU1r_7SGjEtsR7PCEVqcCvHy8sL-g HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:00 +0000] "GET /.well-known/acme-challenge/TelKpfKOeRRi1bAU1r_7SGjEtsR7PCEVqcCvHy8sL-g HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:00 +0000] "GET /.well-known/acme-challenge/TelKpfKOeRRi1bAU1r_7SGjEtsR7PCEVqcCvHy8sL-g HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:04 +0000] "GET /.well-known/acme-challenge/UwKvPKsxhBYMiccm9dwxdjQkUOXkekStI8MJ2SvPyUk HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:04 +0000] "GET /.well-known/acme-challenge/UwKvPKsxhBYMiccm9dwxdjQkUOXkekStI8MJ2SvPyUk HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:04 +0000] "GET /.well-known/acme-challenge/UwKvPKsxhBYMiccm9dwxdjQkUOXkekStI8MJ2SvPyUk HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+
+### 3.4
+root@se-201-11:/lab/work# cd /lab/work/lego/certificates
+openssl x509 -in www.se-201-11.lab.crt -noout -subject -issuer -dates -serial -ext subjectAltName
+openssl x509 -in www.se-201-11.lab.issuer.crt -noout -subject -issuer
+subject=CN = www.se-201-11.lab
+issuer=CN = Pebble Intermediate CA 61d16c
+notBefore=Nov 20 14:37:08 2026 GMT
+notAfter=Nov 20 14:37:07 2031 GMT
+serial=0643D57C10F786A5
+X509v3 Subject Alternative Name: 
+    DNS:www.se-201-11.lab, DNS:portal.se-201-11.lab
+subject=CN = Pebble Intermediate CA 61d16c
+issuer=CN = Pebble Root CA 0932b3
+
+### додатково: тип ключа і алгоритм підпису
+root@se-201-11:/lab/work# cd /lab/work/lego/certificates; openssl x509 -in www.se-201-11.lab.crt -noout -text | grep -E 'Public Key Algorithm|Signature Algorithm|ASN1 OID|NIST CURVE' | sort -u; openssl x509 -in www.se-201-11.lab.issuer.crt -noout -text | grep -E 'Public Key Algorithm' | sort -u
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+            Public Key Algorithm: id-ecPublicKey
+        Signature Algorithm: sha256WithRSAEncryption
+    Signature Algorithm: sha256WithRSAEncryption
+            Public Key Algorithm: rsaEncryption
+
+### 3.5
+root@se-201-11:/lab/work# cp www.se-201-11.lab.crt /lab/tls/server.crt
+cp www.se-201-11.lab.key /lab/tls/server.key
+web-reload
+curl -sS --cacert /lab/tls/acme-root.crt https://www.se-201-11.lab/
+openssl s_client -connect www.se-201-11.lab:443 -servername www.se-201-11.lab -CAfile /lab/tls/acme-root.crt \
+  </dev/null 2>/dev/null | sed -n '/^Certificate chain/,/^---/p;/^Verify return code/p'
+nginx: the configuration file /lab/nginx.conf syntax is ok
+nginx: configuration file /lab/nginx.conf test is successful
+2026/11/20 14:37:08 [notice] 206#206: signal process started
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+Certificate chain
+ 0 s:CN = www.se-201-11.lab
+   i:CN = Pebble Intermediate CA 61d16c
+   a:PKEY: id-ecPublicKey, 256 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 20 14:37:08 2026 GMT; NotAfter: Nov 20 14:37:07 2031 GMT
+---
+Verify return code: 21 (unable to verify the first certificate)
+
+### 3.6
+root@se-201-11:/lab/work# cat www.se-201-11.lab.crt www.se-201-11.lab.issuer.crt > /lab/tls/server.crt
+web-reload
+curl -sS --cacert /lab/tls/acme-root.crt https://www.se-201-11.lab/
+openssl s_client -connect www.se-201-11.lab:443 -servername www.se-201-11.lab -CAfile /lab/tls/acme-root.crt \
+  </dev/null 2>/dev/null | sed -n '/^Certificate chain/,/^---/p;/^Verify return code/p'
+curl -sS --cacert /lab/tls/acme-root.crt https://portal.se-201-11.lab/
+nginx: the configuration file /lab/nginx.conf syntax is ok
+nginx: configuration file /lab/nginx.conf test is successful
+2026/11/20 14:37:08 [notice] 222#222: signal process started
+server: se-201-11 (https)
+Host: www.se-201-11.lab
+SNI: www.se-201-11.lab
+protocol: TLSv1.3
+Certificate chain
+ 0 s:CN = www.se-201-11.lab
+   i:CN = Pebble Intermediate CA 61d16c
+   a:PKEY: id-ecPublicKey, 256 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 20 14:37:08 2026 GMT; NotAfter: Nov 20 14:37:07 2031 GMT
+---
+Verify return code: 21 (unable to verify the first certificate)
+server: se-201-11 (https)
+Host: portal.se-201-11.lab
+SNI: portal.se-201-11.lab
+protocol: TLSv1.3
+

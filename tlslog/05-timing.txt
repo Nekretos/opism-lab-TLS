@@ -1,0 +1,22 @@
+### 5.2
+root@se-201-11:/lab/work# F='%{time_namelookup} %{time_connect} %{time_appconnect} %{time_starttransfer} %{time_total} %{http_version} %{num_connects}\n'
+U=https://origin.se-201-11.lab/
+for i in 1 2 3; do curl -s -o /dev/null --cacert $STAND_CA -w "$F" $U; done
+for i in 1 2 3; do curl -s -o /dev/null --tls-max 1.2 --cacert $STAND_CA -w "$F" $U; done
+0.022765 0.042904 0.066131 0.086496 0.086550 2 1
+0.020424 0.040545 0.063839 0.084125 0.084180 2 1
+0.020542 0.040719 0.066483 0.086730 0.086776 2 1
+0.020407 0.040528 0.083913 0.104358 0.104421 2 1
+0.020431 0.040536 0.083835 0.104099 0.104161 2 1
+0.020431 0.040537 0.083849 0.104150 0.104211 2 1
+
+### 5.3
+root@se-201-11:/lab/work# curl -s --cacert $STAND_CA -w "$F" -o /dev/null $U -o /dev/null $U -o /dev/null $U
+0.020489 0.040612 0.063831 0.084133 0.084196 2 1
+0.000017 0.000000 0.000000 0.020205 0.020273 2 0
+0.000011 0.000000 0.000000 0.020243 0.020283 2 0
+
+### додатково: ping до web (RTT)
+root@se-201-11:/lab/work# ping -c 5 10.53.0.80 2>&1 | tail -3 || true
+bash: line 1: ping: command not found
+

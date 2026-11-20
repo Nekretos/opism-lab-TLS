@@ -1,0 +1,394 @@
+root@se-201-11:/lab/work# openssl version
+OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
+
+root@se-201-11:/lab/work# date -u; tc qdisc show dev eth0
+Fri Nov 20 14:36:30 UTC 2026
+qdisc netem 8001: root refcnt 3 limit 1000 delay 20ms
+
+### 1.1
+root@se-201-11:/lab/work# timeout 8 tcpdump -ni eth0 -A -s0 -l 'host 10.53.0.80 and tcp port 80' > t1-http.txt &
+sleep 1; curl -s http://origin.se-201-11.lab/; wait
+grep -a -E 'GET /|Host:|server: web' t1-http.txt
+server: web
+Host: origin.se-201-11.lab
+SNI: 
+protocol: HTTP/1.1 
+client: 10.53.1.1
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+10 packets captured
+10 packets received by filter
+0 packets dropped by kernel
+14:36:31.252543 IP 10.53.1.1.53484 > 10.53.0.80.80: Flags [P.], seq 1:84, ack 1, win 502, options [nop,nop,TS val 3355283745 ecr 2564790072], length 83: HTTP: GET / HTTP/1.1
+...!...8GET / HTTP/1.1
+Host: origin.se-201-11.lab
+server: web
+Host: origin.se-201-11.lab
+
+### 1.2
+root@se-201-11:/lab/work# timeout 8 tcpdump -ni eth0 -A -s0 -l 'host 10.53.0.80 and tcp port 443' > t1-https.txt &
+sleep 1; curl -s --cacert $STAND_CA https://origin.se-201-11.lab/; wait
+grep -a -c -E 'GET /|server: web' t1-https.txt
+grep -a -o 'origin.se-201-11.lab' t1-https.txt | wc -l
+server: web
+Host: origin.se-201-11.lab
+SNI: origin.se-201-11.lab
+protocol: HTTP/2.0 TLSv1.3
+client: 10.53.1.1
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+22 packets captured
+22 packets received by filter
+0 packets dropped by kernel
+0
+1
+
+### додатково: Host і ім'я сервера в дампі HTTP (кількість входжень)
+root@se-201-11:/lab/work# grep -a -c 'Host:' t1-http.txt; grep -a -o 'origin.se-201-11.lab' t1-http.txt | wc -l; grep -a -c 'Host:' t1-https.txt
+2
+2
+0
+
+### 2.1
+root@se-201-11:/lab/work# openssl s_client -connect origin.se-201-11.lab:443 -servername origin.se-201-11.lab -alpn h2,http/1.1 \
+  -CAfile $STAND_CA -trace </dev/null > t2-13.txt 2>&1
+grep -a -E '^(Sent|Received) Record|Content Type|^    [A-Z][A-Za-z]+, Length' t2-13.txt
+grep -a -E '^(ALPN|New,)|Verify return' t2-13.txt
+Sent Record
+  Content Type = Handshake (22)
+    ClientHello, Length=331
+Received Record
+  Content Type = Handshake (22)
+    ServerHello, Length=118
+Received Record
+  Content Type = ChangeCipherSpec (20)
+Received Record
+  Content Type = ApplicationData (23)
+  Inner Content Type = Handshake (22)
+    EncryptedExtensions, Length=15
+Received Record
+  Content Type = ApplicationData (23)
+  Inner Content Type = Handshake (22)
+    Certificate, Length=991
+Received Record
+  Content Type = ApplicationData (23)
+  Inner Content Type = Handshake (22)
+    CertificateVerify, Length=75
+Received Record
+  Content Type = ApplicationData (23)
+  Inner Content Type = Handshake (22)
+    Finished, Length=48
+Sent Record
+  Content Type = ChangeCipherSpec (20)
+Sent Record
+  Content Type = ApplicationData (23)
+  Inner Content Type = Handshake (22)
+    Finished, Length=48
+Sent Record
+  Content Type = ApplicationData (23)
+  Inner Content Type = Alert (21)
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+ALPN protocol: h2
+Verify return code: 0 (ok)
+
+### 2.2
+root@se-201-11:/lab/work# openssl s_client -connect origin.se-201-11.lab:443 -servername origin.se-201-11.lab -alpn h2,http/1.1 \
+  -CAfile $STAND_CA -trace -tls1_2 </dev/null > t2-12.txt 2>&1
+grep -a -E '^(Sent|Received) Record|Content Type|^    [A-Z][A-Za-z]+, Length' t2-12.txt
+grep -a -E '^(ALPN|New,)|Verify return' t2-12.txt
+Sent Record
+  Content Type = Handshake (22)
+    ClientHello, Length=226
+Received Record
+  Content Type = Handshake (22)
+    ServerHello, Length=74
+Received Record
+  Content Type = Handshake (22)
+    Certificate, Length=986
+Received Record
+  Content Type = Handshake (22)
+    ServerKeyExchange, Length=111
+Received Record
+  Content Type = Handshake (22)
+    ServerHelloDone, Length=0
+Sent Record
+  Content Type = Handshake (22)
+    ClientKeyExchange, Length=33
+Sent Record
+  Content Type = ChangeCipherSpec (20)
+Sent Record
+  Content Type = Handshake (22)
+    Finished, Length=12
+Received Record
+  Content Type = Handshake (22)
+    NewSessionTicket, Length=230
+Received Record
+  Content Type = ChangeCipherSpec (20)
+Received Record
+  Content Type = Handshake (22)
+    Finished, Length=12
+Received Record
+  Content Type = ApplicationData (23)
+Sent Record
+  Content Type = Alert (21)
+New, TLSv1.2, Cipher is ECDHE-ECDSA-AES256-GCM-SHA384
+ALPN protocol: h2
+    Verify return code: 0 (ok)
+
+### 2.3
+root@se-201-11:/lab/work# grep -a -A3 'extension_type=server_name' t2-13.txt | head -4
+        extension_type=server_name(0), length=25
+          0000 - 00 17 00 00 14 6f 72 69-67 69 6e 2e 73 65 2d   .....origin.se-
+          000f - 32 30 31 2d 31 31 2e 6c-61 62                  201-11.lab
+        extension_type=ec_point_formats(11), length=4
+
+### 2.4
+root@se-201-11:/lab/work# for v in 1.3 1.2; do
+  timeout 6 tcpdump -ni eth0 -A -s0 -l 'host 10.53.0.80 and tcp port 443' > t2-dump-$v.txt &
+  sleep 1; curl -s -o /dev/null --tlsv1.2 --tls-max $v --cacert $STAND_CA https://origin.se-201-11.lab/; wait
+  echo "TLS $v: $(grep -a -c 'OPISM Stand Intermediate' t2-dump-$v.txt)"
+done
+TLS 1.3: 0
+TLS 1.2: 2
+
+### 3.1
+root@se-201-11:/lab/work# acme-root
+openssl x509 -in /lab/tls/acme-root.crt -noout -subject -dates
+збережено /lab/tls/acme-root.crt
+subject=CN = Pebble Root CA 0932b3
+notBefore=Nov 20 14:33:46 2026 GMT
+notAfter=Nov 20 14:33:46 2056 GMT
+
+### 3.2
+root@se-201-11:/lab/work# curl -sS --cacert /lab/tls/acme-root.crt https://www.se-201-11.lab/
+curl: (60) SSL certificate problem: self-signed certificate
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+
+### 3.3
+root@se-201-11:/lab/work# lego --server $ACME_DIR --email admin@se-201-11.lab --accept-tos --path /lab/work/lego \
+  --http --http.webroot /var/www/acme \
+  --domains www.se-201-11.lab --domains portal.se-201-11.lab run --no-bundle
+grep acme-challenge /var/log/nginx/access.log
+2026/11/20 14:36:59 No key found for account admin@se-201-11.lab. Generating a P256 key.
+2026/11/20 14:36:59 Saved key to /lab/work/lego/accounts/ca.lab_14000/admin@se-201-11.lab/keys/admin@se-201-11.lab.key
+2026/11/20 14:36:59 [INFO] acme: Registering account for admin@se-201-11.lab
+!!!! HEADS UP !!!!
+
+Your account credentials have been saved in your Let's Encrypt
+configuration directory at "/lab/work/lego/accounts".
+
+You should make a secure backup of this folder now. This
+configuration directory will also contain certificates and
+private keys obtained from Let's Encrypt so making regular
+backups of this folder is ideal.
+2026/11/20 14:36:59 [INFO] [www.se-201-11.lab, portal.se-201-11.lab] acme: Obtaining SAN certificate
+2026/11/20 14:37:00 [INFO] [www.se-201-11.lab] AuthURL: https://ca.lab:14000/authZ/HPctKJIdI4e8vD2EA3SmHNztklw2R1xjKNYGxd8We68
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] AuthURL: https://ca.lab:14000/authZ/Ij7U8xLAwDJbSa7eYVp-41Pmk6tdsBXOBmNyToMiB64
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] acme: Could not find solver for: tls-alpn-01
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] acme: use http-01 solver
+2026/11/20 14:37:00 [INFO] [www.se-201-11.lab] acme: Could not find solver for: tls-alpn-01
+2026/11/20 14:37:00 [INFO] [www.se-201-11.lab] acme: use http-01 solver
+2026/11/20 14:37:00 [INFO] [portal.se-201-11.lab] acme: Trying to solve HTTP-01
+2026/11/20 14:37:04 [INFO] [portal.se-201-11.lab] The server validated our request
+2026/11/20 14:37:04 [INFO] [www.se-201-11.lab] acme: Trying to solve HTTP-01
+2026/11/20 14:37:08 [INFO] [www.se-201-11.lab] The server validated our request
+2026/11/20 14:37:08 [INFO] [www.se-201-11.lab, portal.se-201-11.lab] acme: Validations succeeded; requesting certificates
+2026/11/20 14:37:08 [INFO] Wait for certificate [timeout: 30s, interval: 500ms]
+2026/11/20 14:37:08 [INFO] [www.se-201-11.lab] Server responded with a certificate.
+10.53.0.10 - - [20/Nov/2026:14:37:00 +0000] "GET /.well-known/acme-challenge/TelKpfKOeRRi1bAU1r_7SGjEtsR7PCEVqcCvHy8sL-g HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:00 +0000] "GET /.well-known/acme-challenge/TelKpfKOeRRi1bAU1r_7SGjEtsR7PCEVqcCvHy8sL-g HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:00 +0000] "GET /.well-known/acme-challenge/TelKpfKOeRRi1bAU1r_7SGjEtsR7PCEVqcCvHy8sL-g HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:04 +0000] "GET /.well-known/acme-challenge/UwKvPKsxhBYMiccm9dwxdjQkUOXkekStI8MJ2SvPyUk HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:04 +0000] "GET /.well-known/acme-challenge/UwKvPKsxhBYMiccm9dwxdjQkUOXkekStI8MJ2SvPyUk HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+10.53.0.10 - - [20/Nov/2026:14:37:04 +0000] "GET /.well-known/acme-challenge/UwKvPKsxhBYMiccm9dwxdjQkUOXkekStI8MJ2SvPyUk HTTP/1.1" 200 87 "-" "LetsEncrypt-Pebble-VA (linux; amd64)"
+
+### 3.4
+root@se-201-11:/lab/work# cd /lab/work/lego/certificates
+openssl x509 -in www.se-201-11.lab.crt -noout -subject -issuer -dates -serial -ext subjectAltName
+openssl x509 -in www.se-201-11.lab.issuer.crt -noout -subject -issuer
+subject=CN = www.se-201-11.lab
+issuer=CN = Pebble Intermediate CA 61d16c
+notBefore=Nov 20 14:37:08 2026 GMT
+notAfter=Nov 20 14:37:07 2031 GMT
+serial=0643D57C10F786A5
+X509v3 Subject Alternative Name: 
+    DNS:www.se-201-11.lab, DNS:portal.se-201-11.lab
+subject=CN = Pebble Intermediate CA 61d16c
+issuer=CN = Pebble Root CA 0932b3
+
+### додатково: тип ключа і алгоритм підпису
+root@se-201-11:/lab/work# cd /lab/work/lego/certificates; openssl x509 -in www.se-201-11.lab.crt -noout -text | grep -E 'Public Key Algorithm|Signature Algorithm|ASN1 OID|NIST CURVE' | sort -u; openssl x509 -in www.se-201-11.lab.issuer.crt -noout -text | grep -E 'Public Key Algorithm' | sort -u
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+            Public Key Algorithm: id-ecPublicKey
+        Signature Algorithm: sha256WithRSAEncryption
+    Signature Algorithm: sha256WithRSAEncryption
+            Public Key Algorithm: rsaEncryption
+
+### 3.5
+root@se-201-11:/lab/work# cp www.se-201-11.lab.crt /lab/tls/server.crt
+cp www.se-201-11.lab.key /lab/tls/server.key
+web-reload
+curl -sS --cacert /lab/tls/acme-root.crt https://www.se-201-11.lab/
+openssl s_client -connect www.se-201-11.lab:443 -servername www.se-201-11.lab -CAfile /lab/tls/acme-root.crt \
+  </dev/null 2>/dev/null | sed -n '/^Certificate chain/,/^---/p;/^Verify return code/p'
+nginx: the configuration file /lab/nginx.conf syntax is ok
+nginx: configuration file /lab/nginx.conf test is successful
+2026/11/20 14:37:08 [notice] 206#206: signal process started
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+Certificate chain
+ 0 s:CN = www.se-201-11.lab
+   i:CN = Pebble Intermediate CA 61d16c
+   a:PKEY: id-ecPublicKey, 256 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 20 14:37:08 2026 GMT; NotAfter: Nov 20 14:37:07 2031 GMT
+---
+Verify return code: 21 (unable to verify the first certificate)
+
+### 3.6
+root@se-201-11:/lab/work# cat www.se-201-11.lab.crt www.se-201-11.lab.issuer.crt > /lab/tls/server.crt
+web-reload
+curl -sS --cacert /lab/tls/acme-root.crt https://www.se-201-11.lab/
+openssl s_client -connect www.se-201-11.lab:443 -servername www.se-201-11.lab -CAfile /lab/tls/acme-root.crt \
+  </dev/null 2>/dev/null | sed -n '/^Certificate chain/,/^---/p;/^Verify return code/p'
+curl -sS --cacert /lab/tls/acme-root.crt https://portal.se-201-11.lab/
+nginx: the configuration file /lab/nginx.conf syntax is ok
+nginx: configuration file /lab/nginx.conf test is successful
+2026/11/20 14:37:08 [notice] 222#222: signal process started
+server: se-201-11 (https)
+Host: www.se-201-11.lab
+SNI: www.se-201-11.lab
+protocol: TLSv1.3
+Certificate chain
+ 0 s:CN = www.se-201-11.lab
+   i:CN = Pebble Intermediate CA 61d16c
+   a:PKEY: id-ecPublicKey, 256 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Nov 20 14:37:08 2026 GMT; NotAfter: Nov 20 14:37:07 2031 GMT
+---
+Verify return code: 21 (unable to verify the first certificate)
+server: se-201-11 (https)
+Host: portal.se-201-11.lab
+SNI: portal.se-201-11.lab
+protocol: TLSv1.3
+
+### 4.1
+root@se-201-11:/lab/work# for i in 1 2 3 4 5; do
+  n=f$i.se-201-11.lab; echo "=== $n"
+  curl -sS --cacert $STAND_CA https://$n/ 2>&1 | head -1
+  openssl s_client -connect $n:443 -servername $n -CAfile $STAND_CA </dev/null 2>/dev/null \
+    | sed -n '/^Certificate chain/,/^---/p;/^Verify return code/p' | grep -v PKEY
+done
+=== f1.se-201-11.lab
+server: web, f1
+Certificate chain
+ 0 s:CN = f1.se-201-11.lab
+   i:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+ 1 s:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   i:O = OPISM Lab, CN = OPISM Stand Root CA
+   v:NotBefore: Nov 20 14:33:43 2026 GMT; NotAfter: Nov 19 14:33:43 2031 GMT
+---
+Verify return code: 0 (ok)
+=== f2.se-201-11.lab
+curl: (60) SSL: no alternative certificate subject name matches target host name 'f2.se-201-11.lab'
+Certificate chain
+ 0 s:CN = old.se-201-11.lab
+   i:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+ 1 s:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   i:O = OPISM Lab, CN = OPISM Stand Root CA
+   v:NotBefore: Nov 20 14:33:43 2026 GMT; NotAfter: Nov 19 14:33:43 2031 GMT
+---
+Verify return code: 0 (ok)
+=== f3.se-201-11.lab
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+Certificate chain
+ 0 s:CN = f3.se-201-11.lab
+   i:O = Foreign Org, CN = Foreign Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+ 1 s:O = Foreign Org, CN = Foreign Intermediate CA
+   i:O = Foreign Org, CN = Foreign Root CA
+   v:NotBefore: Nov 20 14:33:43 2026 GMT; NotAfter: Nov 19 14:33:43 2031 GMT
+---
+Verify return code: 20 (unable to get local issuer certificate)
+=== f4.se-201-11.lab
+curl: (60) SSL certificate problem: self-signed certificate
+Certificate chain
+ 0 s:CN = f4.se-201-11.lab
+   i:CN = f4.se-201-11.lab
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+---
+Verify return code: 18 (self-signed certificate)
+=== f5.se-201-11.lab
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+Certificate chain
+ 0 s:CN = f5.se-201-11.lab
+   i:O = OPISM Lab, CN = OPISM Stand Intermediate CA
+   v:NotBefore: Nov 20 14:33:44 2026 GMT; NotAfter: Feb 18 14:33:44 2027 GMT
+---
+Verify return code: 21 (unable to verify the first certificate)
+
+### додатково: curl -k (питання 3) і SAN/дати кожного сертифіката
+root@se-201-11:/lab/work# for i in 1 2 3 4 5; do n=f$i.se-201-11.lab; echo "=== $n: $(curl -sk https://$n/ 2>&1 | head -1)"; openssl s_client -connect $n:443 -servername $n </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 | grep -v '^X509v3'; done
+=== f1.se-201-11.lab: server: web, f1
+subject=CN = f1.se-201-11.lab
+issuer=O = OPISM Lab, CN = OPISM Stand Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f1.se-201-11.lab
+=== f2.se-201-11.lab: server: web, f2
+subject=CN = old.se-201-11.lab
+issuer=O = OPISM Lab, CN = OPISM Stand Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:old.se-201-11.lab
+=== f3.se-201-11.lab: server: web, f3
+subject=CN = f3.se-201-11.lab
+issuer=O = Foreign Org, CN = Foreign Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f3.se-201-11.lab
+=== f4.se-201-11.lab: server: web, f4
+subject=CN = f4.se-201-11.lab
+issuer=CN = f4.se-201-11.lab
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f4.se-201-11.lab
+=== f5.se-201-11.lab: server: web, f5
+subject=CN = f5.se-201-11.lab
+issuer=O = OPISM Lab, CN = OPISM Stand Intermediate CA
+notBefore=Nov 20 14:33:44 2026 GMT
+notAfter=Feb 18 14:33:44 2027 GMT
+    DNS:f5.se-201-11.lab
+
+### 5.2
+root@se-201-11:/lab/work# F='%{time_namelookup} %{time_connect} %{time_appconnect} %{time_starttransfer} %{time_total} %{http_version} %{num_connects}\n'
+U=https://origin.se-201-11.lab/
+for i in 1 2 3; do curl -s -o /dev/null --cacert $STAND_CA -w "$F" $U; done
+for i in 1 2 3; do curl -s -o /dev/null --tls-max 1.2 --cacert $STAND_CA -w "$F" $U; done
+0.022765 0.042904 0.066131 0.086496 0.086550 2 1
+0.020424 0.040545 0.063839 0.084125 0.084180 2 1
+0.020542 0.040719 0.066483 0.086730 0.086776 2 1
+0.020407 0.040528 0.083913 0.104358 0.104421 2 1
+0.020431 0.040536 0.083835 0.104099 0.104161 2 1
+0.020431 0.040537 0.083849 0.104150 0.104211 2 1
+
+### 5.3
+root@se-201-11:/lab/work# curl -s --cacert $STAND_CA -w "$F" -o /dev/null $U -o /dev/null $U -o /dev/null $U
+0.020489 0.040612 0.063831 0.084133 0.084196 2 1
+0.000017 0.000000 0.000000 0.020205 0.020273 2 0
+0.000011 0.000000 0.000000 0.020243 0.020283 2 0
+
+### додатково: ping до web (RTT)
+root@se-201-11:/lab/work# ping -c 5 10.53.0.80 2>&1 | tail -3 || true
+bash: line 1: ping: command not found
+
+ALL_DONE
